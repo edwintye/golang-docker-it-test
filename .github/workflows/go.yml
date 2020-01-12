@@ -23,6 +23,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
+        ls $GOPATH
+        rm -rf $GOPATH/src/github.com/docker/docker/vendor/github.com/docker/go-connections
         
     - name: Unit Test
       run: go test -tags unit -v .
