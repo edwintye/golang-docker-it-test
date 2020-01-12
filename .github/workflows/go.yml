@@ -23,10 +23,7 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-        pwd
-        echo "The gopath is ${GOPATH}"
-        echo "The go env is $(go env GOPATH)"
-        ls $(go env GOPATH)
+        go get github.com/pkg/errors
         rm -rf $(go env GOPATH)/src/github.com/docker/docker/vendor/github.com/docker/go-connections
         
     - name: Unit Test
