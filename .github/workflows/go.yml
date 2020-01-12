@@ -26,8 +26,8 @@ jobs:
         pwd
         echo "The gopath is ${GOPATH}"
         echo "The go env is $(go env GOPATH)"
-        ls $GOPATH
-        rm -rf $GOPATH/src/github.com/docker/docker/vendor/github.com/docker/go-connections
+        ls $(go env GOPATH)
+        rm -rf $(go env GOPATH)/src/github.com/docker/docker/vendor/github.com/docker/go-connections
         
     - name: Unit Test
       run: go test -tags unit -v .
