@@ -29,5 +29,8 @@ jobs:
     - name: Unit Test
       run: go test -tags unit -v .
 
+    - name: Unit Test
+      run: go test -tags integration -v .
+
     - name: Build
       run: go build -v .
