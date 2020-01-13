@@ -5,6 +5,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        redis: [rc, latest, 5.0]
     steps:
 
     - name: Set up Go 1.13
@@ -29,7 +32,9 @@ jobs:
     - name: Unit Test
       run: go test -tags unit -v .
 
-    - name: Unit Test
+    - name: Integration Test
+      env:
+        REDIS_VERSION: ${{ .matrix.redis }}
       run: go test -tags integration -v .
 
     - name: Build
