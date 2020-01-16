@@ -21,13 +21,7 @@ jobs:
 
     - name: Get dependencies
       run: |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
-        go get github.com/pkg/errors
-        rm -rf $(go env GOPATH)/src/github.com/docker/docker/vendor/github.com/docker/go-connections
+        go mod download
         
     - name: Unit Test
       run: go test -tags unit -v .
