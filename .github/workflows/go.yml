@@ -34,7 +34,7 @@ jobs:
 
     - name: Integration Test
       env:
-        REDIS_VERSION: ${{ .matrix.redis }}
+        REDIS_VERSION: ${{ matrix.redis }}
       run: go test -tags integration -v .
 
     - name: Build
