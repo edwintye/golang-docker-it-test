@@ -37,5 +37,8 @@ jobs:
         REDIS_VERSION: ${{ matrix.redis }}
       run: go test -tags integration -v .
 
+    - name: Coverage
+      run: go test -tags=unit,integration -v -covermode=count .
+
     - name: Build
       run: go build -v .

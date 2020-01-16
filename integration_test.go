@@ -3,13 +3,15 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 )
 
-func TestMain(m *testing.M) {
+var docker *simpleDockerContainer
+
+func setUp() {
 	ver := os.Getenv("REDIS_VERSION")
 	if ver == "" {
 		ver = "latest"
@@ -17,33 +19,36 @@ func TestMain(m *testing.M) {
 	imageName := fmt.Sprintf("redis:%s", ver)
 	fmt.Println("Starting test with Redis image " + imageName)
 
-	docker := &simpleDockerContainer{}
+	docker = &simpleDockerContainer{}
 	err := docker.initialize(imageName, "6379")
 	if err != nil {
 		panic(err)
 	}
 	hostname, port := docker.getContainerNetworkInfo()
 	rc = NewRedisClient(hostname, port)
-	exitCode := m.Run()
-	rc.Close()
-	if err = docker.stopContainer(); err != nil {
+}
+
+func tearDown() {
+	if err := docker.stopContainer(); err != nil {
 		panic(err)
 	}
 
 	docker.client.Close()
-	os.Exit(exitCode)
+	rc.Close()
+	rc = nil
 }
 
-func TestRedisPing(t *testing.T) {
+
+func TestRedis(t *testing.T) {
+	setUp()
+
 	t.Run("Testing Redis is connectable", func(t *testing.T) {
 		_, err := rc.Ping().Result()
 		if err != nil {
 			t.Error("Failed to validate Redis connection")
 		}
 	})
-}
 
-func TestRedisCount(t *testing.T) {
 	s := "Whatever"
 	t.Run(fmt.Sprintf("Testing Hello %s", s), func(t *testing.T) {
 		if !strings.HasPrefix(helloCache(s), fmt.Sprintf("Hello %s", s)) {
@@ -60,4 +65,6 @@ func TestRedisCount(t *testing.T) {
 			t.Error(fmt.Sprintf("Redis failed to update %s", res))
 		}
 	})
+
+	tearDown()
 }

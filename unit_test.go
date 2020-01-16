@@ -12,7 +12,6 @@ import (
 func TestMain(m *testing.M) {
 	exitCode := m.Run()
 	os.Exit(exitCode)
-	rc.Close()
 }
 
 func TestHello(t *testing.T) {
