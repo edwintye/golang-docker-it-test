@@ -1,3 +1,5 @@
+// +build integration
+
 package main
 
 import (
@@ -22,6 +24,23 @@ type simpleDockerContainer struct {
 	port        string
 }
 
+type DockerContainerInterface interface {
+	initialize(string, string) error
+	getImage() error
+	startContainer() (string, error)
+	getContainerNetworkInfo() (string, string)
+	stopContainer() error
+}
+
+func getDockerObjects() (*client.Client, context.Context) {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		panic(err)
+	}
+	return cli, ctx
+}
+
 func (dc *simpleDockerContainer) initialize(imageName string, exposedPort string) error {
 	dc.exposedPort = exposedPort
 	if len(strings.Split(imageName, ":")) == 2 {
@@ -36,15 +55,6 @@ func (dc *simpleDockerContainer) initialize(imageName string, exposedPort string
 	}
 	dc.getContainerNetworkInfo()
 	return nil
-}
-
-func getDockerObjects() (*client.Client, context.Context) {
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		panic(err)
-	}
-	return cli, ctx
 }
 
 func (dc *simpleDockerContainer) getImage() error {
@@ -81,7 +91,7 @@ func (dc *simpleDockerContainer) startContainer() (string, error) {
 			Image: dc.imageName, ExposedPorts: nat.PortSet(port),
 		}
 
-		hostConfig := &container.HostConfig{PortBindings: binding,}
+		hostConfig := &container.HostConfig{PortBindings: binding}
 
 		resp, err := dc.client.ContainerCreate(dc.ctx, config, hostConfig, nil, "")
 		if err != nil {
