@@ -1,0 +1,13 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  reviewers:
+  - edwintye
+  ignore:
+  - dependency-name: github.com/go-redis/redis
+    versions:
+    - "> 6.15.7+incompatible"
