@@ -109,19 +109,15 @@ func (dc *simpleDockerContainer) startContainer() (string, error) {
 
 func (dc *simpleDockerContainer) getContainerNetworkInfo() (string, string) {
 	if dc.hostname == "" && dc.port == "" {
-		containers, err := dc.client.ContainerList(dc.ctx, types.ContainerListOptions{})
-		if err != nil {
-			panic(err)
-		}
 		var hostname, port string
-		for _, con := range containers {
-			json, _ := dc.client.ContainerInspect(dc.ctx, con.ID)
-			if con.ID == dc.containerID {
-				for _, v := range json.NetworkSettings.NetworkSettingsBase.Ports {
-					hostname, port = v[0].HostIP, v[0].HostPort
-				}
-			}
+		json, _ := dc.client.ContainerInspect(dc.ctx, dc.containerID)
+		if len(json.NetworkSettings.NetworkSettingsBase.Ports) != 1 {
+			panic("Too many ports mapped")
 		}
+		for _, v := range json.NetworkSettings.NetworkSettingsBase.Ports {
+			hostname, port = v[0].HostIP, v[0].HostPort
+		}
+
 		dc.hostname, dc.port = hostname, port
 	}
 	return dc.hostname, dc.port
