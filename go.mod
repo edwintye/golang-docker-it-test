@@ -9,7 +9,7 @@ require (
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/go-redis/redis/v8 v8.4.11
+	github.com/go-redis/redis/v8 v8.11.0
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
@@ -17,6 +17,7 @@ require (
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect
+	github.com/stretchr/testify v1.6.1 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	google.golang.org/grpc v1.32.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
