@@ -3,6 +3,14 @@ module github.com/edwintye/golang-docker-it-test
 go 1.18
 
 require (
+	github.com/docker/docker v1.13.1
+	github.com/docker/go-connections v0.4.0
+	github.com/go-redis/redis/v8 v8.11.5
+)
+
+replace github.com/docker/docker => github.com/docker/engine v1.4.2-0.20190717161051-705d9623b7c1
+
+require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -27,11 +35,3 @@ require (
 	google.golang.org/grpc v1.32.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )
-
-require (
-	github.com/docker/docker v1.13.1
-	github.com/docker/go-connections v0.4.0
-	github.com/go-redis/redis/v8 v8.11.5
-)
-
-replace github.com/docker/docker => github.com/docker/engine v1.4.2-0.20190717161051-705d9623b7c1
