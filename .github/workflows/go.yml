@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        redis: [rc, latest, 5.0]
+        redis: [rc, latest, 7.0]
     steps:
 
     - name: Set up Go 1.19
