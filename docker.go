@@ -5,8 +5,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"io"
@@ -58,7 +58,7 @@ func (dc *simpleDockerContainer) initialize(imageName string, exposedPort string
 }
 
 func (dc *simpleDockerContainer) getImage() error {
-	out, _ := dc.client.ImageList(dc.ctx, types.ImageListOptions{})
+	out, _ := dc.client.ImageList(dc.ctx, image.ListOptions{})
 
 	hasImage := false
 	for _, o := range out {
@@ -68,7 +68,7 @@ func (dc *simpleDockerContainer) getImage() error {
 	}
 	if hasImage != true {
 		fmt.Println("Failed to find image, pulling")
-		reader, err := dc.client.ImagePull(dc.ctx, dc.imageName, types.ImagePullOptions{})
+		reader, err := dc.client.ImagePull(dc.ctx, dc.imageName, image.PullOptions{})
 		if err != nil {
 			panic(err)
 		}
@@ -93,12 +93,12 @@ func (dc *simpleDockerContainer) startContainer() (string, error) {
 
 		hostConfig := &container.HostConfig{PortBindings: binding}
 
-		resp, err := dc.client.ContainerCreate(dc.ctx, config, hostConfig, nil, "")
+		resp, err := dc.client.ContainerCreate(dc.ctx, config, hostConfig, nil, nil, "redis")
 		if err != nil {
 			return "", err
 		}
 
-		if err := dc.client.ContainerStart(dc.ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+		if err := dc.client.ContainerStart(dc.ctx, resp.ID, container.StartOptions{}); err != nil {
 			return "", err
 		}
 
@@ -124,10 +124,10 @@ func (dc *simpleDockerContainer) getContainerNetworkInfo() (string, string) {
 }
 
 func (dc *simpleDockerContainer) stopContainer() error {
-	if err := dc.client.ContainerStop(dc.ctx, dc.containerID, nil); err != nil {
+	if err := dc.client.ContainerStop(dc.ctx, dc.containerID, container.StopOptions{}); err != nil {
 		return err
 	}
-	if err := dc.client.ContainerRemove(dc.ctx, dc.containerID, types.ContainerRemoveOptions{}); err != nil {
+	if err := dc.client.ContainerRemove(dc.ctx, dc.containerID, container.RemoveOptions{}); err != nil {
 		return err
 	}
 
