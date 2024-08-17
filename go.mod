@@ -7,7 +7,7 @@ toolchain go1.22.0
 require (
 	github.com/docker/docker v27.1.2+incompatible
 	github.com/docker/go-connections v0.5.0
-	github.com/go-redis/redis/v8 v8.11.5
+	github.com/redis/go-redis/v9 v9.6.1
 )
 
 require (
