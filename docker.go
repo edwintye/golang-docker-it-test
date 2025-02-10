@@ -11,6 +11,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"io"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -58,16 +59,28 @@ func (dc *simpleDockerContainer) initialize(imageName string, exposedPort string
 }
 
 func (dc *simpleDockerContainer) getImage() error {
-	out, _ := dc.client.ImageList(dc.ctx, image.ListOptions{})
+	out, err := dc.client.ImageList(dc.ctx, image.ListOptions{})
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Failed to list images %s", err.Error()))
+		return err
+	}
 
-	hasImage := false
+	repoDigest := ""
 	for _, o := range out {
-		if o.RepoTags[0] == dc.imageName {
-			hasImage = true
+		//fmt.Println(fmt.Printf("List of images %+v", o))
+		if len(o.RepoTags) > 0 && slices.Contains(o.RepoTags, dc.imageName) {
+			repoDigest = o.RepoDigests[0]
 		}
 	}
-	if hasImage != true {
-		fmt.Println("Failed to find image, pulling")
+	if repoDigest != "" {
+		fmt.Println("Failed to find image but repo digest obtained, pulling")
+		reader, err := dc.client.ImagePull(dc.ctx, repoDigest, image.PullOptions{})
+		if err != nil {
+			panic(err)
+		}
+		io.Copy(os.Stdout, reader)
+	} else {
+		fmt.Println("Failed to find image, pulling using the image name")
 		reader, err := dc.client.ImagePull(dc.ctx, dc.imageName, image.PullOptions{})
 		if err != nil {
 			panic(err)
@@ -115,7 +128,10 @@ func (dc *simpleDockerContainer) getContainerNetworkInfo() (string, string) {
 			panic("Too many ports mapped")
 		}
 		for _, v := range json.NetworkSettings.NetworkSettingsBase.Ports {
-			hostname, port = v[0].HostIP, v[0].HostPort
+			fmt.Println(fmt.Printf("Network info %+v", v))
+			if len(v) > 0 {
+				hostname, port = v[0].HostIP, v[0].HostPort
+			}
 		}
 
 		dc.hostname, dc.port = hostname, port
