@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
@@ -11,6 +12,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"io"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -60,15 +62,14 @@ func (dc *simpleDockerContainer) initialize(imageName string, exposedPort string
 func (dc *simpleDockerContainer) getImage() error {
 	out, err := dc.client.ImageList(dc.ctx, image.ListOptions{})
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(fmt.Sprintf("Failed to list images %s", err.Error()))
 		return err
 	}
 
 	repoDigest := ""
 	for _, o := range out {
 		//fmt.Println(fmt.Printf("List of images %+v", o))
-		if len(o.RepoTags) > 0 && o.RepoTags[0] == dc.imageName {
-			fmt.Println(fmt.Printf("Image summary: %+v", o))
+		if len(o.RepoTags) > 0 && slices.Contains(o.RepoTags, dc.imageName) {
 			repoDigest = o.RepoDigests[0]
 		}
 	}
@@ -79,6 +80,8 @@ func (dc *simpleDockerContainer) getImage() error {
 			panic(err)
 		}
 		io.Copy(os.Stdout, reader)
+	} else {
+		return errors.New(fmt.Sprintf("fail to find a repo digest with the image name %s", dc.imageName))
 	}
 	return nil
 }

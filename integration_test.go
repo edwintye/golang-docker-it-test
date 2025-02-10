@@ -26,7 +26,7 @@ func setUp() {
 	docker = &simpleDockerContainer{}
 	err := docker.initialize(imageName, "6379")
 	if err != nil {
-		fmt.Println("We are in a real panic")
+		fmt.Println(fmt.Sprintf("We are in a real panic: %s", err.Error()))
 		panic(err)
 	}
 	hostname, port := docker.getContainerNetworkInfo()
