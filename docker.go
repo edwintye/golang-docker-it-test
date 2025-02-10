@@ -4,7 +4,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
@@ -74,14 +73,19 @@ func (dc *simpleDockerContainer) getImage() error {
 		}
 	}
 	if repoDigest != "" {
-		fmt.Println("Failed to find image, pulling")
+		fmt.Println("Failed to find image but repo digest obtained, pulling")
 		reader, err := dc.client.ImagePull(dc.ctx, repoDigest, image.PullOptions{})
 		if err != nil {
 			panic(err)
 		}
 		io.Copy(os.Stdout, reader)
 	} else {
-		return errors.New(fmt.Sprintf("fail to find a repo digest with the image name %s", dc.imageName))
+		fmt.Println("Failed to find image, pulling using the image name")
+		reader, err := dc.client.ImagePull(dc.ctx, dc.imageName, image.PullOptions{})
+		if err != nil {
+			panic(err)
+		}
+		io.Copy(os.Stdout, reader)
 	}
 	return nil
 }
