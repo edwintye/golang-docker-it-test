@@ -58,17 +58,23 @@ func (dc *simpleDockerContainer) initialize(imageName string, exposedPort string
 }
 
 func (dc *simpleDockerContainer) getImage() error {
-	out, _ := dc.client.ImageList(dc.ctx, image.ListOptions{})
+	out, err := dc.client.ImageList(dc.ctx, image.ListOptions{})
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
 
-	hasImage := false
+	repoDigest := ""
 	for _, o := range out {
-		if o.RepoTags[0] == dc.imageName {
-			hasImage = true
+		//fmt.Println(fmt.Printf("List of images %+v", o))
+		if len(o.RepoTags) > 0 && o.RepoTags[0] == dc.imageName {
+			fmt.Println(fmt.Printf("Image summary: %+v", o))
+			repoDigest = o.RepoDigests[0]
 		}
 	}
-	if hasImage != true {
+	if repoDigest != "" {
 		fmt.Println("Failed to find image, pulling")
-		reader, err := dc.client.ImagePull(dc.ctx, dc.imageName, image.PullOptions{})
+		reader, err := dc.client.ImagePull(dc.ctx, repoDigest, image.PullOptions{})
 		if err != nil {
 			panic(err)
 		}
@@ -115,7 +121,10 @@ func (dc *simpleDockerContainer) getContainerNetworkInfo() (string, string) {
 			panic("Too many ports mapped")
 		}
 		for _, v := range json.NetworkSettings.NetworkSettingsBase.Ports {
-			hostname, port = v[0].HostIP, v[0].HostPort
+			fmt.Println(fmt.Printf("Network info %+v", v))
+			if len(v) > 0 {
+				hostname, port = v[0].HostIP, v[0].HostPort
+			}
 		}
 
 		dc.hostname, dc.port = hostname, port

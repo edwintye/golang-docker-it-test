@@ -14,7 +14,7 @@ import (
 var docker *simpleDockerContainer
 
 func setUp() {
-	fmt.Printf("Begin setUp() on the test environment")
+	fmt.Println("Begin setUp() on the test environment")
 	ctx = context.Background()
 	ver := os.Getenv("REDIS_VERSION")
 	if ver == "" {
