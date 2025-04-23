@@ -4,7 +4,7 @@ go 1.22
 toolchain go1.24.1
 
 require (
-	github.com/docker/docker v28.0.1+incompatible
+	github.com/docker/docker v28.1.1+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/redis/go-redis/v9 v9.7.3
@@ -30,6 +30,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
+	github.com/moby/sys/atomicwriter v0.1.0 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
