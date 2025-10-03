@@ -3,7 +3,7 @@ module github.com/edwintye/golang-docker-it-test
 go 1.24.2
 
 require (
-	github.com/docker/docker v28.3.3+incompatible
+	github.com/docker/docker v28.5.0+incompatible
 	github.com/docker/go-connections v0.6.0
 	github.com/ory/dockertest/v3 v3.12.0
 	github.com/redis/go-redis/v9 v9.14.0
@@ -27,7 +27,6 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/sys/atomicwriter v0.1.0 // indirect
