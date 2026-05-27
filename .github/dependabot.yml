@@ -12,7 +12,7 @@ updates:
     versions:
     - "> 6.15.7+incompatible"
 - package-ecosystem: github-actions
-  directories: "/"
+  directory: "/"
   schedule:
     interval: monthly
   open-pull-requests-limit: 5
