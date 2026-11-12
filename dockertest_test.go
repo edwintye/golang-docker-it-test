@@ -3,43 +3,36 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
 	"testing"
 
-	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v4"
 	"github.com/redis/go-redis/v9"
 )
 
 func TestRedisDockertest(t *testing.T) {
-	var err error
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		log.Fatalf("Could not construct pool: %s", err)
-	}
+	// NewPoolT registers cleanup via t.Cleanup, so the container is removed
+	// automatically; WithoutReuse keeps the v3 semantics of a fresh container.
+	pool := dockertest.NewPoolT(t, "")
+	resource := pool.RunT(t, "redis",
+		// This is actually activating the CI matrix which was never activated before until
+		// now that I had a better look at the code while doing the v3 -> v4 upgrade.
+		dockertest.WithTag(redisVersion()),
+		dockertest.WithoutReuse(),
+	)
+	defer func() {
+		if rc != nil {
+			rc.Close()
+			rc = nil
+		}
+	}()
 
-	err = pool.Client.Ping()
-	if err != nil {
-		log.Fatalf("Could not connect to Docker: %s", err)
-	}
-
-	resource, err := pool.Run("redis", "", nil)
-	if err != nil {
-		log.Fatalf("Could not start resource: %s", err)
-	}
-
-	if err = pool.Retry(func() error {
+	if err := pool.Retry(t.Context(), 0, func() error {
 		rc = redis.NewClient(&redis.Options{
-			Addr: fmt.Sprintf("localhost:%s", resource.GetPort("6379/tcp")),
+			// v4's GetHostPort already returns host:port (v3's GetPort was port-only)
+			Addr: resource.GetHostPort("6379/tcp"),
 		})
-
-		return rc.Ping(context.Background()).Err()
+		return rc.Ping(t.Context()).Err()
 	}); err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
-	}
-
-	if err = pool.Purge(resource); err != nil {
-		log.Fatalf("Could not purge resource: %s", err)
+		t.Fatalf("Could not connect to redis: %s", err)
 	}
 }
