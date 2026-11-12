@@ -7,10 +7,6 @@ updates:
   open-pull-requests-limit: 10
   reviewers:
   - edwintye
-  ignore:
-  - dependency-name: github.com/go-redis/redis
-    versions:
-    - "> 6.15.7+incompatible"
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
