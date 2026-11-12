@@ -13,14 +13,18 @@ import (
 
 var docker *simpleDockerContainer
 
+// redisVersion is the image tag used by both integration tests; CI's matrix sets REDIS_VERSION.
+func redisVersion() string {
+	if ver := os.Getenv("REDIS_VERSION"); ver != "" {
+		return ver
+	}
+	return "latest"
+}
+
 func setUp() {
 	fmt.Println("Begin setUp() on the test environment")
 	ctx = context.Background()
-	ver := os.Getenv("REDIS_VERSION")
-	if ver == "" {
-		ver = "latest"
-	}
-	imageName := fmt.Sprintf("redis:%s", ver)
+	imageName := fmt.Sprintf("redis:%s", redisVersion())
 	fmt.Println("Starting test with Redis image " + imageName)
 
 	docker = &simpleDockerContainer{}
